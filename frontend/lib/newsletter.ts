@@ -26,8 +26,10 @@ export interface NewsletterData {
 	week_after_start: string
 }
 
-export async function fetchNewsletterData(): Promise<NewsletterDataResponse> {
-	const response = await getNewsletterData()
+export async function fetchNewsletterData(startWeek?: string): Promise<NewsletterDataResponse> {
+	const options: any = {}
+	if (startWeek) options.query = { start_week: startWeek }
+	const response = await getNewsletterData(options)
 
 	if (response.error) {
 		const err = response.error as ErrorResponse | undefined

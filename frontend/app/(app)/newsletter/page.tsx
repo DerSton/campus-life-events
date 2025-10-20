@@ -31,14 +31,23 @@ export default function NewsletterPage() {
 	} = useQuery({ queryKey: ['auth', 'me'], queryFn: me })
 
 	const canAccessNewsletter = meData?.can_access_newsletter ?? false
+	
+	const [startWeek, setStartWeek] = useState<string>(() => {
+  		const d = new Date();
+  		d.setDate(d.getDate() + 7);
+  		const y = d.getFullYear();
+  		const m = String(d.getMonth() + 1).padStart(2, "0");
+  		const day = String(d.getDate()).padStart(2, "0");
+	  	return `${y}-${m}-${day}`;
+	});
 
 	const {
 		data: newsletterData,
 		isLoading,
 		error
 	} = useQuery({
-		queryKey: ['newsletter-data'],
-		queryFn: fetchNewsletterData,
+		queryKey: ['newsletter-data', startWeek ? startWeek : undefined],
+		queryFn: () => fetchNewsletterData(startWeek ? startWeek : undefined),
 		enabled: canAccessNewsletter
 	})
 
@@ -230,6 +239,20 @@ export default function NewsletterPage() {
 				</p>
 			</div>
 			<div className="grid gap-6 max-w-6xl">
+				<Card>
+					<CardHeader>
+						<CardTitle>Startwoche wählen</CardTitle>
+						<CardDescription>Wähle das Referenzdatum für die Newsletter-Woche</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<input
+							type="date"
+  							value={startWeek}
+  							onChange={(e) => setStartWeek(e.target.value)}
+							className="w-full p-2 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						/>
+					</CardContent>
+				</Card>
 				<Card>
 					<CardHeader>
 						<CardTitle>Aktionen</CardTitle>
