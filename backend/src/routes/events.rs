@@ -446,12 +446,20 @@ pub(crate) async fn delete_event(
 pub(crate) async fn get_newsletter_data(
     State(state): State<AppState>,
     headers: HeaderMap,
+    Query(query): Query<crate::dto::NewsletterDataQuery>,
 ) -> Result<Json<NewsletterDataResponse>, AppError> {
     let user = current_user_from_headers(&headers, &state).await?;
     ensure_newsletter_access(&user, &state).await?;
 
     let now = Utc::now();
-    let (next_week_start, week_after_start, week_after_end) = compute_newsletter_ranges(now);
+
+    let ref_dt = if let Some(start_week) = query.start_week {
+        start_week - Duration::days(7)
+    } else {
+        now
+    };
+
+    let (next_week_start, week_after_start, week_after_end) = compute_newsletter_ranges(ref_dt);
 
     let events = sqlx::query_as!(
         EventWithOrganizer,

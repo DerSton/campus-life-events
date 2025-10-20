@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 
@@ -118,6 +118,12 @@ pub struct ListEventsQuery {
     pub upcoming_only: Option<bool>,
     pub limit: Option<i64>,
     pub offset: Option<i64>,
+}
+
+#[derive(Debug, Deserialize, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub struct NewsletterDataQuery {
+    pub start_week: Option<NaiveDate>,
 }
 
 #[derive(Debug, Deserialize, ToSchema, IntoParams)]
