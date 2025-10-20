@@ -454,7 +454,7 @@ pub(crate) async fn get_newsletter_data(
     let now = Utc::now();
 
     let ref_dt = if let Some(start_week) = query.start_week {
-        start_week - Duration::days(7)
+        start_of_day_utc(start_week - Duration::days(7))
     } else {
         now
     };
